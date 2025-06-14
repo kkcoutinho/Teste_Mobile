@@ -36,4 +36,67 @@ describe('Fluxo de compra MyDemoAPP', () => {
         const checkout = await $("xpath://android.widget.TextView[@text=\"Proceed To Checkout\"]");
         await checkout.click();
     });
+
+    it('Deve fazer Login', async () => {
+        const username = await $("accessibility id:Username input field");
+        await username.addValue("bob@example.com");
+
+        const password = await $("accessibility id:Password input field");
+        await password.addValue("10203040");
+
+        const botaologin = await $("accessibility id:Login button");
+        await botaologin.click();
+
+    });
+
+    it('Deve preencher formulário de Checkout', async () => {
+        const fullname = await $("accessibility id:Full Name* input field");
+        await fullname.addValue("Bob da Silva");
+        const adress = await $("accessibility id:Address Line 1* input field");
+        await adress.addValue("Avenida Paes de Barros 1000");
+        const adressdois = await $("accessibility id:Address Line 2 input field");
+        await adressdois.addValue("Mooca");
+        const cidade = await $("accessibility id:City* input field");
+        await cidade.addValue("São Paulo");
+        const estado = await $("accessibility id:State/Region input field");
+        await estado.addValue("SP");
+
+        await driver.action('pointer')
+            .move({ duration: 0, x: 737, y: 1260 })
+            .down({ button: 0 })
+            .move({ duration: 1000, x: 748, y: 548 })
+            .up({ button: 0 })
+            .perform();
+
+        const cep = await driver.$("accessibility id:Zip Code* input field");
+        await cep.addValue("03030050");
+        const pais = await driver.$("accessibility id:Country* input field");
+        await pais.addValue("Brasil");
+        const pagar = await driver.$("xpath://android.view.ViewGroup[@content-desc=\"To Payment button\"]");
+        await pagar.click();
+    });
+
+    it('Deve preencher formulário de pagamento e finalizar compra', async () => {
+        const full = await $("accessibility id:Full Name* input field");
+        await full.addValue("Bob da Silva");
+        const cardnumber = await $("accessibility id:Card Number* input field");
+        await cardnumber.addValue("325812657568789");
+        const date = await $("accessibility id:Expiration Date* input field");
+        await date.addValue("03/26");
+        const code = await $("accessibility id:Security Code* input field");
+        await code.addValue("123");
+        const orderbutton = await $("xpath://android.view.ViewGroup[@content-desc=\"Review Order button\"]");
+        await orderbutton.click();
+
+        const productmochila = await $("accessibility id:product label");
+        await expect(productmochila).toHaveText("Sauce Labs Backpack");
+        const pricemochila = await $("accessibility id:product price");
+        await expect(pricemochila).toHaveText("$29.99");
+        const placeorderbutton = await $("accessibility id:Place Order button");
+        await placeorderbutton.click();
+        const msgcomplete = await $("-android uiautomator:new UiSelector().text(\"Checkout Complete\")");
+        await expect(msgcomplete).toHaveText("Checkout Complete");
+        const msgthankyou = await $("xpath://android.widget.TextView[@text=\"Thank you for your order\"]");
+        await expect(msgthankyou).toHaveText("Thank you for your order");
+    });
 });
